@@ -1,0 +1,190 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+
+struct zemlja {
+    char name[22];
+    char KOD[4];
+    float CJEP;
+    int lockdown;
+};
+
+struct datum {
+    int day;
+    int month;
+    int year;
+
+};
+struct trip {
+    char kod[4];
+    struct datum d1;
+    struct datum d2;
+    int money;
+
+};
+
+struct zemlja zemlja;
+struct trip trips[50];
+
+int numberOfTrips;
+
+void isCountrySafeToTravel(char country[50], FILE* file) {
+    int i = 0;
+    int day;
+    char line[30];
+    int month;
+    int year;
+    int durationOfVirus;
+    while (i < numberOfTrips) {
+        int calendar[31 + 1][12 + 1][4 + 1] = { 0 };
+        calendar[trips[i].d1.day][trips[i].d1.month][trips[i].d1.year % 2020];
+        calendar[trips[i].d2.day][trips[i].d2.month][trips[i].d2.year % 2020];
+
+        while (1) {
+            day = trips[i].d1.day;
+            month = trips[i].d1.month;
+            year = trips[i].d1.year % 2020;
+            day++;
+            if (day == 32) {
+                day = 1;
+                month++;
+                if (month == 13) {
+                    month = 1;
+                    year++;
+                }
+            }
+            if (calendar[day][month][year] != 1)
+                calendar[day][month][year] = 1;
+            else
+                break;
+        }
+        while (fgets(line, sizeof(line), file) != NULL) {
+
+
+
+        }
+
+    }
+}
+    void initializePutoivanja(char country[4], FILE * file) {
+        char line[50];
+        int i = 0;
+        char cod[4];
+        char day[3];
+        char month[3];
+        char year[5];
+        char money[6];
+        while (fgets(line, sizeof(line), file) != NULL) {
+            strncpy(cod, line, 3);
+            cod[3] = '\0';
+            if (strcmp(cod, country) == 0) {
+                strncpy(day, line + 4, 2);
+                day[2] = '\0';
+                strncpy(month, line + 7, 2);
+                month[2] = '\0';
+                strncpy(year, line + 10, 4);
+                year[4] = '\0';
+                struct datum polaska = { atoi(day),atoi(month),atoi(year) };
+                trips[i].d1 = polaska;
+                strncpy(day, line + 16, 2);
+                day[2] = '\0';
+                strncpy(month, line + 19, 2);
+                month[2] = '\0';
+                strncpy(year, line + 22, 4);
+                year[4] = '\0';
+                struct datum dolaska = { atoi(day),atoi(month),atoi(year) };
+                trips[i].d2 = dolaska;
+                strncpy(money, line + 28, 4);
+                if (money[3] == 'k') {
+                    money[3] = '\0';
+                }
+                money[4] = '\0';
+                puts(money);
+
+                i++;
+            }
+            numberOfTrips = i;
+        }
+
+
+
+    }
+
+    void initalizeZemljeInStruc(char country[4], FILE * file) {
+        char line[50];
+        int i = 0;
+        char kod[4];
+        char name[22];
+        char CJEP[5];
+        char lockdown[5];
+
+        while (fgets(line, sizeof(line), file) != NULL) {
+
+            strncpy(kod, line, 3);
+            kod[3] = '\0';
+            if (strcmp(kod, country) == 0) {
+                strcpy(zemlja.KOD, kod);
+
+                int j = 4;
+                while (line[j] != '0') {
+                    name[j - 4] = line[j];
+                    j++;
+                }
+                name[j - 4] = '\0';
+                strcpy(zemlja.name, name);
+
+                int z = 0;
+                while (line[j] != ' ') {
+                    CJEP[z] = line[j];
+                    j++;
+                    z++;
+                }
+                CJEP[z] = '\0';
+                zemlja.CJEP = atof(CJEP);
+
+                strncpy(lockdown, line + j, strlen(line) - j);
+                zemlja.lockdown = atoi(lockdown);
+                i++;
+            }
+        }
+    }
+
+    int main() {
+
+        FILE* filePlan = NULL;
+        FILE* fileZemlje = NULL;
+        FILE* filePutovanja = NULL;
+
+        filePlan = fopen("plan.txt", "r");
+        fileZemlje = fopen("zemlje.txt", "r");
+        filePutovanja = fopen("putovanja.txt", "r");
+
+
+
+        char line[50];
+        int money;
+        int numberOfCountrys;
+        char country[4];
+        char plan[20][100];
+
+
+        while (fgets(line, sizeof(line), filePlan) != NULL) {
+
+            //fputs(line, stdout);
+        }
+        //fgets(line, 50, fileInput);
+
+        scanf("%d %d\n", &money, &numberOfCountrys);
+
+        for (int i = 0; i < numberOfCountrys; i++) {
+            gets(country);
+            initializePutoivanja(country, filePutovanja);
+            initalizeZemljeInStruc(country, fileZemlje);
+            isCountrySafeToTravel(country, filePlan);
+        }
+    }
+
+
